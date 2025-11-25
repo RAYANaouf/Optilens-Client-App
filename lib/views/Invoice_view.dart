@@ -28,7 +28,6 @@ class _InvoicePageState extends State<InvoicePage> {
       final matchesSearch = item.title.toLowerCase().contains(
         searchQuery.toLowerCase(),
       );
-      // Ici tu peux appliquer filtre date/status si tu as ces infos
       return matchesSearch;
     }).toList();
   }
@@ -38,10 +37,8 @@ class _InvoicePageState extends State<InvoicePage> {
     return Scaffold(
       body: Column(
         children: [
-          // Header fixe
           const AppHeader(title: 'Invoices'),
 
-          // Appel du widget de recherche + filtres
           InvoiceFilterBar(
             selectedStatus: selectedStatus,
             selectedDate: selectedDate,
@@ -64,7 +61,6 @@ class _InvoicePageState extends State<InvoicePage> {
 
           const SizedBox(height: 12),
 
-          // Liste scrollable
           Expanded(
             child: Container(
               color: const Color.fromARGB(255, 252, 253, 253),

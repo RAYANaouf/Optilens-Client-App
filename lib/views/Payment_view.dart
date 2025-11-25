@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/header.dart';
-import '../widgets/invoice_filter_bar.dart'; // réutilisation de ton widget filtre
+import '../widgets/invoice_filter_bar.dart';
 import '../utils/payment_utils.dart';
 
 class PaymentPage extends StatefulWidget {
@@ -59,10 +59,8 @@ class _PaymentPageState extends State<PaymentPage> {
     return Scaffold(
       body: Column(
         children: [
-          // Header fixe
           const AppHeader(title: 'Payments'),
 
-          // Recherche + filtres
           InvoiceFilterBar(
             selectedStatus: selectedStatus,
             selectedDate: selectedDate,
@@ -85,7 +83,6 @@ class _PaymentPageState extends State<PaymentPage> {
 
           const SizedBox(height: 12),
 
-          // Liste des paiements
           Expanded(
             child: SingleChildScrollView(
               child: PaymentList(
