@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class InvoiceItemData {
-  final String title; // titre dynamique pour chaque item
+  final String title;
   final double ttc;
   final double price;
 
@@ -13,9 +13,9 @@ class InvoiceItemData {
 }
 
 class InvoiceList extends StatelessWidget {
-  final String globalTitle; // Titre global changeable
-  final String label; // Label fixe pour tous les items de la page
-  final Color priceColor; // Couleur fixe du prix pour tous les items
+  final String globalTitle;
+  final String label;
+  final Color priceColor;
   final List<InvoiceItemData> items;
 
   const InvoiceList({
@@ -29,7 +29,7 @@ class InvoiceList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFF5F5F5), // fond gris clair
+      color: const Color(0xFFF5F5F5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -46,12 +46,12 @@ class InvoiceList extends StatelessWidget {
                 ),
               ),
             ),
-          // Liste des items
+
           ...items.map((item) {
             return Container(
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.white, // couleur exacte des boxes Payment
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
@@ -66,7 +66,6 @@ class InvoiceList extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Partie gauche : label fixe + titre + TTC
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -89,7 +88,6 @@ class InvoiceList extends StatelessWidget {
                     ],
                   ),
 
-                  // Prix à droite avec couleur fixe
                   Text(
                     "${item.price.toStringAsFixed(2)} DA",
                     style: TextStyle(

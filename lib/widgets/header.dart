@@ -20,9 +20,8 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // Menu à gauche (clickable)
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: Alignment.centerRight,
               child: InkWell(
                 onTap: onMenuTap,
                 borderRadius: BorderRadius.circular(8),
@@ -33,7 +32,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
 
-            // Titre centré descendu un peu
             Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -52,9 +50,8 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
 
-            // Optilens à droite NON clickable
             const Align(
-              alignment: Alignment.centerRight,
+              alignment: Alignment.centerLeft,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(

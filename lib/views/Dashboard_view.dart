@@ -7,7 +7,6 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Exemple de données pour la liste
     final invoiceItems = [
       InvoiceItemData(title: "F/POS/2025/165149", ttc: 17960.0, price: 17960.0),
       InvoiceItemData(title: "F/POS/2025/165150", ttc: 12500.0, price: 12500.0),
@@ -24,11 +23,9 @@ class DashboardPage extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
-          // Barre du haut
           const AppHeader(title: 'Dashboard'),
           const SizedBox(height: 20),
 
-          // Box teal
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
             padding: const EdgeInsets.all(20),
@@ -59,9 +56,9 @@ class DashboardPage extends StatelessWidget {
           const SizedBox(height: 20),
 
           InvoiceList(
-            globalTitle: "Recent Invoices", // titre global changeable
-            label: "Invoice", // label fixe pour cette page
-            priceColor: Colors.red, // couleur fixe du prix pour cette page
+            globalTitle: "Recent Invoices",
+            label: "Invoice",
+            priceColor: Colors.red,
             items: invoiceItems,
           ),
         ],

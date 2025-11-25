@@ -49,11 +49,10 @@ class _InvoiceFilterBarState extends State<InvoiceFilterBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFF5F5F5), // gris clair de fond comme Payment
+      color: const Color(0xFFF5F5F5),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
         children: [
-          // Search bar
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -83,10 +82,8 @@ class _InvoiceFilterBarState extends State<InvoiceFilterBar> {
 
           const SizedBox(height: 12),
 
-          // Filters
           Row(
             children: [
-              // Date Filter
               Expanded(
                 child: InkWell(
                   onTap: pickDate,
@@ -124,7 +121,6 @@ class _InvoiceFilterBarState extends State<InvoiceFilterBar> {
               ),
               const SizedBox(width: 12),
 
-              // Status Filter
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.symmetric(

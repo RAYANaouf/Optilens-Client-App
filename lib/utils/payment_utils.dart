@@ -47,7 +47,6 @@ class PaymentList extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  // Côté gauche : payment & invoice
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +69,6 @@ class PaymentList extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Côté droit : date & amount
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [

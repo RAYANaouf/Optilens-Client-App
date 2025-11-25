@@ -39,7 +39,6 @@ class LoginPage extends StatelessWidget {
               ),
               const SizedBox(height: 40),
 
-              // Welcome Text
               const Text(
                 'Welcome Back',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -67,7 +66,6 @@ class LoginPage extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    // Client Code Field
                     TextField(
                       decoration: InputDecoration(
                         hintText: 'Client Code',
@@ -80,7 +78,6 @@ class LoginPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
 
-                    // Login Button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -109,7 +106,6 @@ class LoginPage extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // Support text
               const Text(
                 'Having trouble? Contact support.',
                 style: TextStyle(color: Colors.black54),
