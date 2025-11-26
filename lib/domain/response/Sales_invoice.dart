@@ -18,16 +18,9 @@ class SalesInvoice {
       name: json["name"],
       posting_date: json["posting_date"],
       grand_total: json["grand_total"],
-      is_pos: json["is_pos"],
       outstanding_amount: json["outstanding_amount"],
       status: json["status"],
+      is_pos: json["is_pos"],
     );
   }
-
-  /*   "name": "FV-2025-181989",
-                "posting_date": "2025-11-24",
-                "grand_total": 2210.0,
-                "outstanding_amount": 2210.0,
-                "status": "Unpaid",
-                "is_pos": 1*/
 }

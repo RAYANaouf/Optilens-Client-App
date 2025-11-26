@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'logout_dialogue.dart';
 
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final VoidCallback? onMenuTap;
 
-  const AppHeader({super.key, required this.title, this.onMenuTap});
+  const AppHeader({super.key, required this.title});
 
   @override
   Size get preferredSize => const Size.fromHeight(72);
@@ -22,16 +22,18 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
           children: [
             Align(
               alignment: Alignment.centerRight,
-              child: InkWell(
-                onTap: onMenuTap,
-                borderRadius: BorderRadius.circular(8),
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.menu, size: 28, color: Colors.black87),
-                ),
+              child: PopupMenuButton<String>(
+                icon: const Icon(Icons.menu, size: 28, color: Colors.black87),
+                onSelected: (value) {
+                  if (value == 'logout') {
+                    LogoutDialog.show(context);
+                  }
+                },
+                itemBuilder: (BuildContext context) => const [
+                  PopupMenuItem<String>(value: 'logout', child: Text('Logout')),
+                ],
               ),
             ),
-
             Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -49,7 +51,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                 ],
               ),
             ),
-
             const Align(
               alignment: Alignment.centerLeft,
               child: Padding(

@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import '../widgets/header.dart';
 import '../widgets/invoice_filter_bar.dart';
 import '../utils/invoice_utils.dart';
+import '../../application/controllers/invoice_controller.dart';
+import '../../domain/response/InvoicesResponse.dart';
+import '../../domain/response/Sales_invoice.dart';
 
 class InvoicePage extends StatefulWidget {
-  const InvoicePage({super.key});
+  final String customerCode;
+
+  const InvoicePage({super.key, required this.customerCode});
 
   @override
   State<InvoicePage> createState() => _InvoicePageState();
@@ -15,21 +20,65 @@ class _InvoicePageState extends State<InvoicePage> {
   String selectedStatus = 'All';
   DateTime? selectedDate;
 
-  final List<InvoiceItemData> allItems = [
-    InvoiceItemData(title: "F/POS/2025/165149", ttc: 17960.0, price: 17960.0),
-    InvoiceItemData(title: "F/POS/2025/165150", ttc: 12500.0, price: 12500.0),
-    InvoiceItemData(title: "F/POS/2025/165151", ttc: 9800.0, price: 9800.0),
-    InvoiceItemData(title: "F/POS/2025/165152", ttc: 15000.0, price: 15000.0),
-    InvoiceItemData(title: "F/POS/2025/165153", ttc: 20000.0, price: 20000.0),
-  ];
+  final InvoiceController controller = InvoiceController();
+  List<SalesInvoice> serverItems = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchInvoices();
+  }
+
+  void fetchInvoices() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final InvoicesResponse? response = await controller.fetchInvoices(
+        widget.customerCode,
+      );
+
+      if (response != null) {
+        serverItems = response.sales_invoices;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Erreur lors de la récupération des factures"),
+        ),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
 
   List<InvoiceItemData> get filteredItems {
-    return allItems.where((item) {
-      final matchesSearch = item.title.toLowerCase().contains(
-        searchQuery.toLowerCase(),
-      );
-      return matchesSearch;
-    }).toList();
+    return serverItems
+        .where((item) {
+          final matchesSearch = item.name.toLowerCase().contains(
+            searchQuery.toLowerCase(),
+          );
+          final matchesStatus =
+              selectedStatus == 'All' || item.status == selectedStatus;
+          final matchesDate =
+              selectedDate == null ||
+              (DateTime.parse(item.posting_date).year == selectedDate!.year &&
+                  DateTime.parse(item.posting_date).month ==
+                      selectedDate!.month &&
+                  DateTime.parse(item.posting_date).day == selectedDate!.day);
+
+          return matchesSearch && matchesStatus && matchesDate;
+        })
+        .map(
+          (item) => InvoiceItemData(
+            title: item.name,
+            ttc: item.grand_total,
+            price: item.outstanding_amount,
+          ),
+        )
+        .toList();
   }
 
   @override
@@ -64,14 +113,18 @@ class _InvoicePageState extends State<InvoicePage> {
           Expanded(
             child: Container(
               color: const Color.fromARGB(255, 252, 253, 253),
-              child: SingleChildScrollView(
-                child: InvoiceList(
-                  globalTitle: 'All Invoice',
-                  label: "Invoice",
-                  priceColor: Colors.red,
-                  items: filteredItems,
-                ),
-              ),
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : serverItems.isEmpty
+                  ? const Center(child: Text('No invoices found'))
+                  : SingleChildScrollView(
+                      child: InvoiceList(
+                        globalTitle: 'All Invoice',
+                        label: "Invoice",
+                        priceColor: Colors.red,
+                        items: filteredItems,
+                      ),
+                    ),
             ),
           ),
         ],

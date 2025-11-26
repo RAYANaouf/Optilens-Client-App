@@ -141,7 +141,7 @@ class _InvoiceFilterBarState extends State<InvoiceFilterBar> {
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       value: widget.selectedStatus,
-                      items: ['All', 'Paid', 'Pending', 'Overdue']
+                      items: ['All', 'Paid', 'Overdue']
                           .map(
                             (status) => DropdownMenuItem(
                               value: status,
