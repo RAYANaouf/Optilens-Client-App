@@ -2,19 +2,14 @@ import 'package:flutter/material.dart';
 
 class InvoiceFilterBar extends StatefulWidget {
   final void Function(String) onSearchChanged;
-  final void Function(DateTime?) onDateSelected;
   final void Function(String?) onStatusChanged;
-
   final String selectedStatus;
-  final DateTime? selectedDate;
 
   const InvoiceFilterBar({
     super.key,
     required this.onSearchChanged,
-    required this.onDateSelected,
     required this.onStatusChanged,
     required this.selectedStatus,
-    this.selectedDate,
   });
 
   @override
@@ -36,125 +31,63 @@ class _InvoiceFilterBarState extends State<InvoiceFilterBar> {
     super.dispose();
   }
 
-  Future<void> pickDate() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: widget.selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    );
-    widget.onDateSelected(date);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFF5F5F5),
+      color: const Color.fromRGBO(254, 255, 255, 1),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
+      child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: TextField(
-              controller: _controller,
-              onChanged: widget.onSearchChanged,
-              decoration: InputDecoration(
-                hintText: 'Search invoice...',
-                prefixIcon: const Icon(Icons.search),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _controller,
+                onChanged: widget.onSearchChanged,
+                decoration: const InputDecoration(
+                  hintText: 'Search by number',
+                  prefixIcon: Icon(Icons.search),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                 ),
               ),
             ),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(width: 12),
 
-          Row(
-            children: [
-              Expanded(
-                child: InkWell(
-                  onTap: pickDate,
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 16,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.calendar_today, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          widget.selectedDate == null
-                              ? 'Select date'
-                              : "${widget.selectedDate!.day}/${widget.selectedDate!.month}/${widget.selectedDate!.year}",
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                icon: const Icon(Icons.filter_list),
+                value: widget.selectedStatus,
+                items: ['All', 'Paid', 'Overdue']
+                    .map(
+                      (status) =>
+                          DropdownMenuItem(value: status, child: Text(status)),
+                    )
+                    .toList(),
+                onChanged: widget.onStatusChanged,
               ),
-              const SizedBox(width: 12),
-
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: widget.selectedStatus,
-                      items: ['All', 'Paid', 'Overdue']
-                          .map(
-                            (status) => DropdownMenuItem(
-                              value: status,
-                              child: Text(status),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: widget.onStatusChanged,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),

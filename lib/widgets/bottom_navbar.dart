@@ -4,7 +4,11 @@ class BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  const BottomNavBar({super.key, required this.currentIndex, required this.onTap});
+  const BottomNavBar({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,10 +19,7 @@ class BottomNavBar extends StatelessWidget {
       unselectedItemColor: Colors.grey,
       type: BottomNavigationBarType.fixed,
       items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.dashboard),
-          label: 'Dashboard',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Dashboard'),
         BottomNavigationBarItem(
           icon: Icon(Icons.receipt_long),
           label: 'Invoice',

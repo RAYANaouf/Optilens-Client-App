@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:test_project/domain/response/InvoicesResponse.dart';
+import '../../domain/response/InvoicesResponse.dart';
 
 class InvoiceController {
-  static const String baseUrl = "https://optilens.halfware.info/api/method/";
+  static const String baseUrl = "https://optilens.jethings.com/api/method/";
   static const String getInvoicesByCustomerCode =
       "mobile_app.api.get_invoices_by_customer_code";
 

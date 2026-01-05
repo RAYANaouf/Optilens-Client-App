@@ -17,7 +17,7 @@ class Customer {
     return Customer(
       name: json['name'],
       code: json['custom_customer_code'],
-      debt: (json['custom_debt'] ?? 0),
+      debt: json['custom_debt'],
       email: json['email_id'],
       mobile: json['mobile_no'],
     );

@@ -1,4 +1,4 @@
-import 'package:test_project/domain/response/Sales_invoice.dart';
+import 'sales_invoice.dart';
 
 class InvoicesResponse {
   final String customer_code;

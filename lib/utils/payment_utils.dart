@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
 
+class PaidInvoice {
+  final String invoiceId;
+  final double amount;
+
+  PaidInvoice({required this.invoiceId, required this.amount});
+}
+
 class PaymentItemData {
   final String paymentId;
-  final String invoiceId;
   final String date;
-  final double amount;
+  final List<PaidInvoice> invoices;
 
   PaymentItemData({
     required this.paymentId,
-    required this.invoiceId,
     required this.date,
-    required this.amount,
+    required this.invoices,
   });
+  double get totalAmount => invoices.fold(0, (sum, inv) => sum + inv.amount);
 }
 
-class PaymentList extends StatelessWidget {
+class PaymentList extends StatefulWidget {
   final String globalTitle;
   final List<PaymentItemData> items;
 
@@ -25,71 +31,184 @@ class PaymentList extends StatelessWidget {
   });
 
   @override
+  State<PaymentList> createState() => _PaymentListState();
+}
+
+class _PaymentListState extends State<PaymentList> {
+  int? expandedIndex;
+
+  void toggleExpand(int index) {
+    setState(() {
+      expandedIndex = expandedIndex == index ? null : index;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (globalTitle.isNotEmpty)
+        if (widget.globalTitle.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
-              globalTitle,
+              widget.globalTitle,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
           ),
-        ...items.map((item) {
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        ...List.generate(widget.items.length, (index) {
+          final item = widget.items[index];
+          final isExpanded = expandedIndex == index;
+
+          return Column(
+            children: [
+              GestureDetector(
+                onTap: () => toggleExpand(index),
+                child: Card(
+                  color: const Color.fromRGBO(254, 255, 255, 1),
+                  elevation: 2,
+                  shadowColor: Colors.black.withOpacity(0.2),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
                       children: [
-                        Text(
-                          'Payment: ${item.paymentId}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Payment for ${item.paymentId}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                ' ${item.date}',
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 4),
                         Text(
-                          'Invoice: ${item.invoiceId}',
+                          '${item.totalAmount.toStringAsFixed(2)} DA',
                           style: const TextStyle(
-                            fontSize: 12,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        AnimatedRotation(
+                          turns: isExpanded ? 0.5 : 0,
+                          duration: const Duration(milliseconds: 200),
+                          child: const Icon(
+                            Icons.keyboard_arrow_down,
                             color: Colors.grey,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(item.date, style: const TextStyle(fontSize: 14)),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${item.amount.toStringAsFixed(2)} DA',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
+                ),
+              ),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: isExpanded
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Container(
+                          padding: const EdgeInsets.all(14),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                            color: const Color.fromRGBO(254, 255, 255, 1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: const Color.fromRGBO(254, 255, 255, 1),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Invoices Paid",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromRGBO(0, 168, 156, 1),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              ..._buildPaidInvoices(item),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      )
+                    : const SizedBox(),
+              ),
+            ],
+          );
+        }),
+      ],
+    );
+  }
+
+  List<Widget> _buildPaidInvoices(PaymentItemData item) {
+    return item.invoices.map((invoice) {
+      return Card(
+        color: const Color.fromRGBO(249, 250, 251, 1),
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        elevation: 0,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    invoice.invoiceId,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    "Due: ${item.date}",
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
-            ),
-          );
-        }).toList(),
-      ],
-    );
+              Text(
+                "${invoice.amount.toStringAsFixed(2)} DA",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }).toList();
   }
 }

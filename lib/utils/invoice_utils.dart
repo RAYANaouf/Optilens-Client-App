@@ -1,65 +1,46 @@
 import 'package:flutter/material.dart';
+import '../domain/response/sales_invoice.dart';
+import 'status_color.dart';
 
 class InvoiceItemData {
   final String title;
   final double ttc;
   final double price;
+  final String postingDate;
+  final String status;
 
   InvoiceItemData({
+    required this.status,
     required this.title,
     required this.ttc,
+    required this.postingDate,
     required this.price,
   });
 }
 
 class InvoiceList extends StatelessWidget {
-  final String globalTitle;
-  final String label;
-  final Color priceColor;
   final List<InvoiceItemData> items;
+  final String invoiceType;
 
   const InvoiceList({
     super.key,
-    required this.globalTitle,
-    required this.label,
-    required this.priceColor,
     required this.items,
+    required this.invoiceType,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFF5F5F5),
+      color: const Color.fromRGBO(254, 255, 255, 1),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Titre global
-          if (globalTitle.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Text(
-                globalTitle,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal,
-                ),
-              ),
-            ),
-
           ...items.map((item) {
             return Container(
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -70,7 +51,7 @@ class InvoiceList extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "$label: ${item.title}",
+                        invoiceType == "pos" ? "${item.title}" : item.title,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -79,7 +60,7 @@ class InvoiceList extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        "TTC: ${item.ttc.toStringAsFixed(2)}",
+                        item.postingDate,
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey.shade700,
@@ -88,13 +69,49 @@ class InvoiceList extends StatelessWidget {
                     ],
                   ),
 
-                  Text(
-                    "${item.price.toStringAsFixed(2)} DA",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: priceColor,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        "${item.price.toStringAsFixed(2)} DA",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+
+                      if (item.ttc != 0)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 4,
+                            horizontal: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: getStatusColor(item.status).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            "Debt: ${item.ttc.toStringAsFixed(2)} DA",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: getStatusColor(item.status),
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 6),
+
+                      Text(
+                        "● ${item.status}",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: getStatusColor(item.status),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -104,4 +121,16 @@ class InvoiceList extends StatelessWidget {
       ),
     );
   }
+}
+
+List<InvoiceItemData> convertToInvoiceItemData(List<SalesInvoice> invoices) {
+  return invoices.map((invoice) {
+    return InvoiceItemData(
+      title: invoice.name,
+      postingDate: invoice.posting_date,
+      ttc: invoice.outstanding_amount,
+      price: invoice.grand_total,
+      status: invoice.status,
+    );
+  }).toList();
 }

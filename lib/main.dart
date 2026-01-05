@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'widgets/bottom_navbar.dart';
-import 'views/Dashboard_view.dart';
-import 'views/Invoice_view.dart';
-import 'views/Payment_view.dart';
-import 'views/Profil_view.dart';
-import 'views/login_view.dart';
+import 'views/client/Dashboard_view.dart';
+import 'views/client/Invoice_view.dart';
+import 'views/client/Payment_view.dart';
+import 'views/client/Profil_view.dart';
+import 'views/client/login_view.dart';
 import 'domain/response/Customer.dart';
+import 'widgets/logout_dialogue.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,43 +28,82 @@ class MyApp extends StatelessWidget {
 
 class MainPage extends StatefulWidget {
   final Customer customer;
+  final int selectedIndex;
 
-  const MainPage({super.key, required this.customer});
+  const MainPage({super.key, required this.customer, this.selectedIndex = 0});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<MainPage> createState() => MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
-  int _selectedIndex = 0;
+class MainPageState extends State<MainPage> {
+  late int _selectedIndex;
   late final List<Widget> _pages;
+  final List<int> _navigationHistory = [];
+
+  void setPage(int index) {
+    if (index < 0 || index >= _pages.length) return;
+
+    setState(() {
+      _selectedIndex = index;
+      _navigationHistory.add(index);
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.selectedIndex;
+    _navigationHistory.add(_selectedIndex);
+
     _pages = [
       DashboardPage(customer: widget.customer),
-      InvoicePage(customerCode: widget.customer.code),
-      const PaymentPage(),
+      InvoicePage(
+        customerCode: widget.customer.code,
+        customer: widget.customer,
+      ),
+      PaymentPage(
+        customer: widget.customer,
+        customerCode: widget.customer.code,
+      ),
       ProfilePage(
-        username: widget.customer.name,
-        imageUrl:
-            'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png',
+        customer: widget.customer,
+        customerCode: widget.customer.code,
+        logout: () => LogoutDialog.show(context),
       ),
     ];
   }
 
   void _onItemTapped(int index) {
-    setState(() => _selectedIndex = index);
+    if (_selectedIndex == index) return;
+
+    setState(() {
+      _selectedIndex = index;
+      _navigationHistory.add(index);
+    });
+  }
+
+  Future<bool> _onWillPop() async {
+    if (_navigationHistory.length > 1) {
+      setState(() {
+        _navigationHistory.removeLast();
+        _selectedIndex = _navigationHistory.last;
+      });
+      return false;
+    }
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        body: _pages[_selectedIndex],
+        bottomNavigationBar: BottomNavBar(
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }

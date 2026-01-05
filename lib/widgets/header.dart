@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'logout_dialogue.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final dynamic customer;
+  final String customerCode;
 
-  const AppHeader({super.key, required this.title});
+  const AppHeader({
+    super.key,
+    required this.title,
+    required this.customer,
+    required this.customerCode,
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(72);
@@ -13,54 +21,47 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      child: Container(
+      elevation: 6,
+      shadowColor: Colors.black26,
+      child: SizedBox(
         height: preferredSize.height,
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Stack(
-          alignment: Alignment.center,
           children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: PopupMenuButton<String>(
-                icon: const Icon(Icons.menu, size: 28, color: Colors.black87),
-                onSelected: (value) {
-                  if (value == 'logout') {
-                    LogoutDialog.show(context);
-                  }
-                },
-                itemBuilder: (BuildContext context) => const [
-                  PopupMenuItem<String>(value: 'logout', child: Text('Logout')),
-                ],
-              ),
-            ),
             Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 6),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.teal,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Color.fromRGBO(239, 67, 67, 1),
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Positioned(
+              right: 12,
+              top: 0,
+              bottom: 0,
+              child: PopupMenuButton<String>(
+                icon: const Icon(Icons.menu, size: 28),
+                onSelected: (_) => LogoutDialog.show(context),
+                itemBuilder: (_) => const [
+                  PopupMenuItem(value: 'logout', child: Text('Logout')),
                 ],
               ),
             ),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  'Optilens',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+            Positioned(
+              left: 12,
+              top: 0,
+              bottom: 0,
+              child: InkWell(
+                onTap: () {
+                  ZoomDrawer.of(context)?.toggle();
+                },
+                child: Center(
+                  child: Image.asset(
+                    'assets/images/optilensss.png',
+                    height: 30,
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
